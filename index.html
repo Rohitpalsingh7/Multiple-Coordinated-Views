@@ -1,12 +1,614 @@
-<script src="https://d3js.org/d3.v4.min.js"></script>
-
+<!DOCTYPE html>
+<meta charset="utf-8">
 <style>
+.axis text {
+  font: 10px sans-serif;
+}
+.axis line,
+.axis path {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+.tooltip {
+  position: absolute;
+  width: 200px;
+  height: 28px;
+  pointer-events: none;
+}
 </style>
-
 <body>
-  <h1> Multiple Views </h1>
-</body>
-
-<script>
-  console.log(d3); // test if d3 is loaded
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="crossfilter.js"> </script>
+   <script>
+var dispatch = d3.dispatch("load", "statechange");
+var margin = {top: 200, right: 20, bottom: 30, left: 150},
+      width = 400 - margin.left - margin.right,
+      height = 460 - margin.top - margin.bottom;
+      radius=150
+      r=250;
+ var se;
+ var o;
+   // 
+var color = d3.scaleOrdinal(d3.schemeCategory20);
+var arc = d3.arc()
+    .outerRadius(radius - 10)
+    .innerRadius(0);
+var pie = d3.pie()
+    .sort(null)
+    .value(function(d) { return d; });
+var svg = d3.select("body").append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  var color1 = d3.scaleOrdinal(d3.schemeCategory20);
+ 
+  var arc1 = d3.arc() 
+      .outerRadius(radius - 10)
+      .innerRadius(radius - 70);
+  
+  var pie1 = d3.pie()
+      .sort(null)
+      .value(function(d) { return d; });
+  var svg1 = d3.select("body").append("svg")
+      .attr("width", width + margin.left + margin.top)
+      .attr("height", height + margin.top + margin.bottom)
+      .attr("id", "svg1")
+    .append("g")
+      .attr("transform", "translate(" +  (width + margin.left + margin.right)/ 2 + "," + margin.top + ")");
+      
+var svg2=d3.select("body")
+        .append("svg")
+        .attr("width",width + margin.left + margin.right)
+          .attr("height",height + margin.top + margin.bottom)
+      
+        .attr("id","svg2")
+      
+          
+  
+var legendRectSize = 10;
+var legendSpacing = 4;
+var b=[];
+var ta;
+var groups = [
+  "Under 5 Years",
+  "5 to 13 Years",
+  "14 to 17 Years",
+  "18 to 24 Years",
+  "25 to 44 Years",
+  "45 to 64 Years",
+  "65 Years and Over"
+];
+var roads=[
+     "Berri1",
+     "Maisonneuve_2",
+     "Maisonneuve_1",
+      "Brébeuf",
+      "Parc",
+      "PierDup"];
+var test;
+var monthGroup;
+var c,t,totalcycle;
+var ar=[];
+var dateDim,newData;
+ 
+var totalcycle;
+var t,c,local;
+var ar=[];
+var street1;
+var street2;
+var street3;
+var street4;
+var street5;
+var street6;
+var streetarr=[];
+var str=[];
+var mst1=[];
+var mst2=[];
+var mst3=[];
+var mst4=[];
+var mst5=[];
+var mst6=[];
+var mst7=[];
+var mst8=[];
+var mst9=[];
+var mst10=[];
+var mst11=[];
+var mst12=[];
+var div=[];
+var reformattedArray={};
+var sum1=0;
+var sum2=0;
+var sum3=0;
+var sum4=0;
+var sum5=0;
+var sum6=0;
+var sum7=0;
+var sum8=0;
+var sum9=0;
+var sum10=0;
+var sum11=0;
+var sum12=0;
+var mon=[];
+var janmon=[];
+var febmon;
+var marmon;
+var aprmon;
+var maymon;
+var junemon;
+var julymon;
+var augmon;
+var sepmon;
+var octmon;
+var novmon;
+var decmon;
+var testin;
+var df=[12,46,78,90]
+var mon1=[];
+var smn1=[]
+var smn2=[]
+var smn3=[]
+var smn4=[]
+var smn5=[]
+var smn6=[]
+var smn7=[]
+var smn8=[]
+var smn9=[]
+var smn10=[]
+var smn11=[]
+var smn12=[]
+d3.csv("cycle.csv", function(d) {d.Berri1=+d.Berri1;
+  d.Maisonneuve_2=+d.Maisonneuve_2;
+  d.Maisonneuve_1=+d.Maisonneuve_1;
+  d.Brébeuf=+d.Brébeuf;
+  d.Parc=+d.Parc;
+  d.PierDup=+d.PierDup;
+  return d;
+  }, function(error, data) {
+  if (error) throw error;
+  var Day = d3.map();
+  newData=crossfilter(data);
+  dateDim=newData.dimension(function(d) { return d.Dat.substr(3,2) ;})
+ 
+ //
+        //monDim=newData.dimension(function(d) {return d.Dat;})
+ //
+var dim=newData.dimension(function(d) {return d.Dat.substr(6,2) ;})
+   totalcycle=dim.group().reduceSum(function(d) {return (d.Berri1+d.Maisonneuve_2+d.Maisonneuve_1+d.Brébeuf+d.Parc+d.PierDup);});
+   t=3839647
+   monthGroup=dateDim.group().reduceSum(function(d) {return ((d.Berri1+d.Maisonneuve_2+d.Maisonneuve_1+d.Brébeuf+d.Parc+d.PierDup)/t) *100 ;})
+   c=monthGroup.top(12)
+   piedata=d3.map();
+   
+    ta=d3.map();
+   for (var i =0;i<12;i++)
+   {
+    
+     ar[i]=c[i].value;
+     b[i]=c[i].key;
+       
+  }
+  street1=dateDim.group().reduceSum(function(d) {return d.Berri1;})
+  street2=dateDim.group().reduceSum(function(d) {return d.Maisonneuve_2;})
+  street3=dateDim.group().reduceSum(function(d) {return d.Maisonneuve_1;})
+  street4=dateDim.group().reduceSum(function(d) {return d.Brébeuf;})
+  street5=dateDim.group().reduceSum(function(d) {return d.Parc;})
+  street6=dateDim.group().reduceSum(function(d) {return d.PierDup;})
+  
+   str[0]= street1.top(12),
+   str[1]= street2.top(12),
+   str[2]= street3.top(12),
+   str[3]= street4.top(12),
+   str[4]= street5.top(12),
+   str[5]= street6.top(12);
+   
+   for (i=0;i<6 ; i++)
+   {   
+       var k=0;
+       while (k<12)
+       { 
+            if (str[i][k].key=="01")
+            
+              {mst1.push(str[i][k].value)}
+            else if (str[i][k].key=="02")
+              {mst2.push(str[i][k].value)}
+            else if (str[i][k].key=="03")
+              {mst3.push(str[i][k].value)}
+            else if (str[i][k].key=="04")
+         
+            {mst4.push(str[i][k].value)}
+            else if (str[i][k].key=="05")
+              {mst5.push(str[i][k].value)}
+            else if (str[i][k].key=="06")
+              {mst6.push(str[i][k].value)}
+            else if (str[i][k].key=="07")
+         
+            {mst7.push(str[i][k].value)}
+            else if (str[i][k].key=="08")
+              {mst8.push(str[i][k].value)}
+            else if (str[i][k].key=="09")
+              {mst9.push(str[i][k].value)}
+            else if (str[i][k].key=="10")
+         
+            {mst10.push(str[i][k].value)}
+            else if (str[i][k].key=="11")
+              {mst11.push(str[i][k].value)}
+            else if (str[i][k].key=="12")
+              {mst12.push(str[i][k].value)}
+          
+         k++;
+       }
+}
+for (var k=0;k<6;k++)
+  {
+      sum1=sum1+mst1[k]; 
+      sum2=sum2+mst2[k];
+      sum3=sum3+mst3[k];
+      sum4=sum4+mst4[k];
+      sum5=sum5+mst5[k];
+      sum6=sum6+mst6[k];
+      sum7=sum7+mst7[k];
+      sum8=sum8+mst8[k];
+      sum9=sum9+mst9[k];
+      sum10=sum10+mst10[k];
+      sum11=sum11+mst11[k];
+      sum12=sum12+mst12[k];
+  }
+ for (var k=0;k<6;k++)
+ {
+ smn1[k]=(mst1[k]/100)*sum1;
+ smn2[k]=(mst2[k]/100)*sum2;
+ smn3[k]=(mst3[k]/100)*sum3;
+ smn4[k]=(mst4[k]/100)*sum4;
+ smn5[k]=(mst5[k]/100)*sum5;
+ smn6[k]=(mst6[k]/100)*sum6;
+ smn7[k]=(mst7[k]/100)*sum7;
+ smn8[k]=(mst8[k]/100)*sum8;
+ smn9[k]=(mst9[k]/100)*sum9;
+ smn10[k]=(mst10[k]/100)*sum10;
+ smn11[k]=(mst11[k]/100)*sum11;
+ smn12[k]=(mst12[k]/100)*sum12;
+ 
+ }
+ 
+ for (var k=0; k<6; k++)
+ {
+  mst1[k]=(mst1[k]/sum1)*100;
+  mst2[k]=(mst2[k]/sum2)*100;
+  mst3[k]=(mst3[k]/sum3)*100;
+  mst4[k]=(mst4[k]/sum4)*100;
+  mst5[k]=(mst5[k]/sum5)*100;
+  mst6[k]=(mst6[k]/sum6)*100;
+  mst7[k]=(mst7[k]/sum7)*100;
+  mst8[k]=(mst8[k]/sum8)*100;
+  mst9[k]=(mst9[k]/sum9)*100;
+  mst10[k]=(mst10[k]/sum10)*100;
+  mst11[k]=(mst11[k]/sum11)*100;
+  mst12[k]=(mst12[k]/sum12)*100;
+  
+ }
+  
+ // data.forEach(function(d) { Day.set(d.Dat, d); });
+  dispatch.call("load", this, mst1);
+  dispatch.call("statechange", this, dateDim);
+});
+dispatch.on("load.menu", function(mst1) {
+ var g = svg.selectAll(".arc")
+      .data(pie(ar))
+    .enter().append("g")
+      .attr("class", "arc");
+  g.append("path")
+      .attr("d", arc)
+      .style("fill", function(d, i ) { return color(i); })
+      .style("stroke", "black");
+  var legend = svg.selectAll('.legend')
+        .data(color.domain())
+        .enter()
+        .append('g')
+        .attr('class', 'legend')
+        .attr('transform', function(d, i) {
+            var height = legendRectSize + legendSpacing;
+            var offset =  height * color.domain().length / 2;
+            var horz = 15 * legendRectSize;
+            var vert = i * height - offset;
+            return 'translate(' + horz + ',' + vert + ')';
+        });
+    legend.append('rect')
+        .attr('width', legendRectSize)
+        .attr('height', legendRectSize)
+        .style('fill', color)
+        .style('stroke', color);
+    legend.append('text')
+        .data(pie(b))
+        .attr('x', legendRectSize + legendSpacing)
+        .attr('y', legendRectSize - legendSpacing)
+        .text(function(d) { if (d.value=="07") {return "Jul";}
+          else if (d.value=="05") {return "May";}
+          else if (d.value=="08") {return "Aug";}
+          else if (d.value=="06") {return "Jun";}
+          else if (d.value=="09") {return "Sept";}
+          else if (d.value=="10") {return "Oct";}
+          else if (d.value=="04") {return "Apr";}
+          else if (d.value=="11") {return "Nov";}
+          else if (d.value=="03") {return "Mar";}
+          else if (d.value=="12") {return "Dec";}
+          else if (d.value=="02") {return "Feb";}
+          else if (d.value=="01") {return "Jan";}
+           })
+        ;
+     
+      
+       //g.on("mouseover", tip.show)
+      
+        g.on("click", function(d,i) { dispatch.call("statechange", this, i); });
+  
+});
+dispatch.on("load.donut", function(mst1) {
+ 
+var demodata=[10,40,50,70];
+ var g1 = svg1.selectAll(".arc")
+      .data(pie1(mst4))
+    .enter().append("g")
+      .attr("class", "arc");
+     // console.log(mst1);
+      g1.append("path")
+      .attr("d", arc1)
+      //.style("fill", "blue")
+      .style("fill", function(d, i ) { return color1(i); })
+    
+var legend = svg1.selectAll('.legend')
+        .data(color1.domain())
+        .enter()
+        .append('g')
+        .attr('class', 'legend')
+        .attr('transform', function(d, i) {
+            var height = legendRectSize + legendSpacing;
+            var offset =  height * color.domain().length / 2;
+            var horz = 15 * legendRectSize;
+            var vert = i * height - offset;
+            return 'translate(' + horz + ',' + vert + ')';
+        });
+    legend.append('rect')
+        .attr('width', legendRectSize)
+        .attr('height', legendRectSize)
+        .style('fill', color)
+        .style('stroke', color);
+    legend.append('text')
+        .attr('x', legendRectSize + legendSpacing)
+        .attr('y', legendRectSize - legendSpacing)
+        .text(function(d,i) { if(i==0){return "Berri1" ;}
+            else if (i==1) {return "Maisonneuve_2";}
+            else if (i==2) {return "Maisonneuve_1" ;}
+            else if (i==3) {return "Brébeuf";}
+            else if (i==4) {return "Parc" ;}
+            else if (i==5) {return "PierDup" ;}
+         });
+  
+  dispatch.on("statechange.donut", function(i) {
+    
+    if(i==1)
+{  d3.select("#svg1").remove();
+   mon=mst2;
+  svgcreat(mon)
+}
+if (i==2)
+{
+d3.select("#svg1").remove();
+   mon=mst3;
+  svgcreat(mon)
+}
+else if(i==3) {d3.select("#svg1").remove();
+   mon=mst4;
+  svgcreat(mon)}
+else if(i==4) {d3.select("#svg1").remove();
+   mon=mst5;
+  svgcreat(mon)}
+else if(i==5) {d3.select("#svg1").remove();
+   mon=mst6;
+  svgcreat(mon)}
+else if(i==6) {d3.select("#svg1").remove();
+   mon=mst7;
+  svgcreat(mon)}
+else if(i==7) {d3.select("#svg1").remove();
+   mon=mst8;
+  svgcreat(mon)}
+else if(i==8) {d3.select("#svg1").remove();
+   mon=mst9;
+  svgcreat(mon)}
+else if(i==9) {d3.select("#svg1").remove();
+   mon=mst10;
+  svgcreat(mon)}
+else if(i==10) {d3.select("#svg1").remove();
+   mon=mst11;
+  svgcreat(mon)}
+else if(i==11) {d3.select("#svg1").remove();
+   mon=mst12;
+  svgcreat(mon)}
+  else if (i==0){d3.select("#svg1").remove();
+   mon=mst1;
+  svgcreat(mon)}
+function svgcreat(mon)
+{
+var color1 = d3.scaleOrdinal(d3.schemeCategory20);
+ 
+  var arc1 = d3.arc() 
+      .outerRadius(radius - 10)
+      .innerRadius(radius - 70);
+  
+  var pie1 = d3.pie()
+      .sort(null)
+      .value(function(d) { return d; });
+  var svg1 = d3.select("body").append("svg")
+      .attr("width", width + margin.left + margin.right+margin.top)
+      .attr("height", height + margin.top + margin.bottom)
+      .attr("id", "svg1")
+    .append("g")
+      .attr("transform", "translate(" +  (width + margin.left + margin.right)/ 2 + "," + margin.top + ")");
+      
+      var g1 = svg1.selectAll(".arc")
+      .data(pie1(mon))
+    .enter().append("g")
+      .attr("class", "arc");
+     // console.log(mst1);
+      g1.append("path")
+      .attr("d", arc1)
+      //.style("fill", "blue")
+      .style("fill", function(d, i ) { return color1(i); })
+      .style("stroke", "black");
+      var legend = svg1.selectAll('.legend')
+        .data(color1.domain())
+        .enter()
+        .append('g')
+        .attr('class', 'legend')
+        .attr('transform', function(d, i) {
+            var height = legendRectSize + legendSpacing;
+            var offset =  height * color.domain().length / 2;
+            var horz = 15 * legendRectSize;
+            var vert = i * height - offset;
+            return 'translate(' + horz + ',' + vert + ')';
+        });
+    legend.append('rect')
+        .attr('width', legendRectSize)
+        .attr('height', legendRectSize)
+        .style('fill', color)
+        .style('stroke', color);
+    legend.append('text')
+        .attr('x', legendRectSize + legendSpacing)
+        .attr('y', legendRectSize - legendSpacing)
+        .text(function(d,i) { if(i==0){return "Berri1" ;}
+            else if (i==1) {return "Maisonneuve_2";}
+            else if (i==2) {return "Maisonneuve_1" ;}
+            else if (i==3) {return "Brébeuf";}
+            else if (i==4) {return "Parc" ;}
+            else if (i==5) {return "PierDup" ;}
+         });
+  
+}
+  });
+});
+dispatch.on("load.bar", function(mst1)
+{ 
+  //var x = d3.scaleBand().rangeRound([0, w]).padding(0.2),
+    //    y = d3.scaleLine
+  
+    var x = d3.scaleBand().rangeRound([0, width]).padding(0.4),
+        y = d3.scaleLinear().rangeRound([height, 0]);
+    //console.log(x.bandwidth())
+    var g3 = svg2.append("g")
+           .attr("transform", "translate(" + (margin.left -margin.right) + "," + (margin.right +margin.bottom + margin.right)+ ")");
+      x.domain(smn1.map(function(d,i) { return i; }));
+      y.domain([0, d3.max(smn1, function(d) { return d; })]);
+      g3.append("g")
+          .attr("class", "axis x")
+          .attr("transform", "translate(0," + height + ")")
+          .call(d3.axisBottom(x));
+      g3.append("g")
+        .attr("class", "axis y")
+          .call(d3.axisLeft(y))
+      
+    g3.selectAll(".bar")
+        .data(smn1)
+        .enter().append("rect")
+        .style("fill", function(d, i ) { return color1(i); } )
+        .attr("x", function(d,i) { return x(i); })
+          .attr("y", function(d) { return y(d); })
+          .attr("width", x.bandwidth())
+          .attr("height", function(d) { return height - y(d); });
+         // .attr("stroke", "black")
+          //.attr("stroke-width", 2);
+    g3.append("text")             
+      .attr("transform",
+            "translate(" + (width/2) + " ," + 
+                           (height + 30 ) + ")")
+      .style("text-anchor", "middle")
+      .text("Streets across Montreal");
+ dispatch.on("statechange.bar", function(i) {
+    
+    if(i==1)
+{  d3.select("#svg2").remove();
+   mon1=smn2;
+  barsvg(mon1)
+}
+if (i==2)
+{
+d3.select("#svg2").remove();
+   mon1=smn3;
+  barsvg(mon1)
+}
+else if(i==3) {d3.select("#svg2").remove();
+   mon1=smn4;
+  barsvg(mon1)}
+else if(i==4) {d3.select("#svg2").remove();
+   mon1=smn5;
+  barsvg(mon)}
+else if(i==5) {d3.select("#svg2").remove();
+   mon1=smn6;
+  barsvg(mon1)}
+else if(i==6) {d3.select("#svg2").remove();
+   mon1=smn7;
+  barsvg(mon1)}
+else if(i==7) {d3.select("#svg2").remove();
+   mon1=smn8;
+  barsvg(mon1)}
+else if(i==8) {d3.select("#svg2").remove();
+   mon1=smn9;
+  barsvg(mon1)}
+else if(i==9) {d3.select("#svg2").remove();
+   mon1=smn10;
+  barsvg(mon1)}
+else if(i==10) {d3.select("#svg2").remove();
+   mon1=smn11;
+  barsvg(mon1)}
+else if(i==11) {d3.select("#svg2").remove();
+   mon1=smn12;
+  barsvg(mon1)}
+  else if (i==0){d3.select("#svg2").remove();
+   mon1=smn1;
+  barsvg(mon1)}
+function barsvg(mon1)
+{
+var svg2=d3.select("body")
+        .append("svg")
+        .attr("width",width + margin.left + margin.right)
+          .attr("height",height + margin.top + margin.bottom)
+      
+        .attr("id","svg2")
+        .attr("id","svg2")
+  var x = d3.scaleBand().rangeRound([0, width]).padding(0.4),
+        y = d3.scaleLinear().rangeRound([height, 0]);
+    //console.log(x.bandwidth())
+    var g3 = svg2.append("g")
+           .attr("transform", "translate(" + (margin.left-margin.right) + "," + (margin.right +margin.bottom + margin.right) + ")");
+      x.domain(mon1.map(function(d,i) { return i; }));
+      y.domain([0, d3.max(mon1, function(d) { return d; })]);
+      g3.append("g")
+          .attr("class", "axis x")
+          .attr("transform", "translate(0," + height + ")")
+          .call(d3.axisBottom(x));
+      g3.append("g")
+        .attr("class", "axis y")
+          .call(d3.axisLeft(y))
+      
+    g3.selectAll(".bar")
+        .data(mon1)
+        .enter().append("rect")
+        .style("fill", function(d, i ) { return color1(i); })
+        .attr("x", function(d,i) { return x(i); })
+          .attr("y", function(d) { return y(d); })
+          .attr("width", x.bandwidth())
+          .attr("height", function(d) { return height - y(d); })
+    g3.append("text")             
+      .attr("transform",
+            "translate(" + (width/2) + " ," + 
+                           (height + 30 ) + ")")
+      .style("text-anchor", "middle")
+      .text("Streets across Montreal");
+  
+  
+}
+  });
+});
+      
+        
 </script>
