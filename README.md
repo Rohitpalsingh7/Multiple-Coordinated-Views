@@ -1,7 +1,3 @@
-Assignment 4 - Visualizations and Multiple Views  
-===
-
-
 
 Assignment 4 - Visualizations and Multiple Views  
 ===
